@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Document Generator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 2rem;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 900px;
+            padding: 2.5rem;
+        }
+        input[type="text"], input[type="number"], textarea, select {
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            width: 100%;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+        input[type="text"]:focus, input[type="number"]:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #3b82f6; /* Blue-500 */
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25); /* Blue-500 with opacity */
+        }
+        .btn-primary {
+            background-color: #3b82f6; /* Blue-500 */
+            color: #ffffff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .btn-primary:hover {
+            background-color: #2563eb; /* Blue-600 */
+            transform: translateY(-1px);
+        }
+        .btn-primary:active {
+            background-color: #1d4ed8; /* Blue-700 */
+            transform: translateY(0);
+        }
+        .btn-danger {
+            background-color: #ef4444; /* Red-500 */
+            color: #ffffff;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        .btn-danger:hover {
+            background-color: #dc2626; /* Red-600 */
+        }
+        .message-box {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #4CAF50; /* Green */
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .message-box.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="container">
+        <h1 class="text-3xl font-bold text-gray-800 mb-8 text-center">Universal Document Generator</h1>
+
+        <!-- Message Box for notifications -->
+        <div id="messageBox" class="message-box"></div>
+
+        <form id="invoiceForm" class="space-y-6">
+            <!-- Your Company Details -->
+            <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4">Your Company Details</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="yourCompanyName" class="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
+                        <input type="text" id="yourCompanyName" name="yourCompanyName" class="mt-1 block w-full" value="HowNik Technologies" required>
+                    </div>
+                    <div>
+                        <label for="yourCompanyAddress" class="block text-sm font-medium text-gray-700 mb-1">Company Address</label>
+                        <input type="text" id="yourCompanyAddress" name="yourCompanyAddress" class="mt-1 block w-full" value="52, Main Road, Near Fire Station, Velankanni, Nagapattinam - 611111, Tamil Nadu, India" required>
+                    </div>
+                    <div>
+                        <label for="yourCompanyEmail" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="text" id="yourCompanyEmail" name="yourCompanyEmail" class="mt-1 block w-full" value="howardnikhil95@gmail.com">
+                    </div>
+                    <div>
+                        <label for="yourCompanyPhone" class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                        <input type="text" id="yourCompanyPhone" name="yourCompanyPhone" class="mt-1 block w-full" value="+91 7094149367">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Client Details -->
+            <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4">Client Details</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="documentType" class="block text-sm font-medium text-gray-700 mb-1">Document Type</label>
+                        <select id="documentType" name="documentType" class="mt-1 block w-full">
+                            <option value="Invoice">Invoice</option>
+                            <option value="Quotation">Quotation</option>
+                            <option value="Bill">Bill</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="clientName" class="block text-sm font-medium text-gray-700 mb-1">Client Name</label>
+                        <input type="text" id="clientName" name="clientName" class="mt-1 block w-full" value="Acme Corporation" required>
+                    </div>
+                    <div>
+                        <label for="clientAddress" class="block text-sm font-medium text-gray-700 mb-1">Client Address</label>
+                        <input type="text" id="clientAddress" name="clientAddress" class="mt-1 block w-full" value="456 Client St, Town, State, ZIP" required>
+                    </div>
+                    <div>
+                        <label for="invoiceNumber" class="block text-sm font-medium text-gray-700 mb-1">Document Number</label>
+                        <input type="text" id="invoiceNumber" name="invoiceNumber" class="mt-1 block w-full" value="DOC-2024-001" required>
+                    </div>
+                    <div>
+                        <label for="invoiceDate" class="block text-sm font-medium text-gray-700 mb-1">Document Date</label>
+                        <input type="date" id="invoiceDate" name="invoiceDate" class="mt-1 block w-full" value="" required>
+                    </div>
+                    <div id="dueDateField">
+                        <label for="dueDate" class="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
+                        <input type="date" id="dueDate" name="dueDate" class="mt-1 block w-full" value="">
+                    </div>
+                    <div>
+                        <label for="currencySymbol" class="block text-sm font-medium text-gray-700 mb-1">Currency Symbol</label>
+                        <input type="text" id="currencySymbol" name="currencySymbol" class="mt-1 block w-full" value="Rs." required>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Items Section -->
+            <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4">Items</h2>
+                <div id="itemsContainer" class="space-y-4">
+                    <!-- Initial item row -->
+                    <div class="item-row grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+                        <div class="col-span-2">
+                            <label for="description-0" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                            <input type="text" id="description-0" name="description" class="w-full" value="Web Design Services" required>
+                        </div>
+                        <div>
+                            <label for="quantity-0" class="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
+                            <input type="number" id="quantity-0" name="quantity" class="w-full" min="1" value="1" required>
+                        </div>
+                        <div>
+                            <label for="unitPrice-0" class="block text-sm font-medium text-gray-700 mb-1">Unit Price</label>
+                            <input type="number" id="unitPrice-0" name="unitPrice" class="w-full" min="0.01" step="0.01" value="1500.00" required>
+                        </div>
+                        <div class="flex items-center justify-end">
+                            <button type="button" class="btn-danger remove-item-btn hidden">Remove</button>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" id="addItemBtn" class="mt-6 btn-primary">Add Item</button>
+            </div>
+
+            <!-- Totals and Notes -->
+            <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="notes" class="block text-sm font-medium text-gray-700 mb-1">Notes / Terms</label>
+                        <textarea id="notes" name="notes" rows="4" class="mt-1 block w-full">Pleasure doing business with you!</textarea>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex justify-between">
+                            <span class="text-gray-700">Subtotal:</span>
+                            <span id="subtotal" class="font-semibold text-gray-800">Rs.0.00</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <label for="taxRate" class="text-gray-700">Tax Rate (%):</label>
+                            <input type="number" id="taxRate" name="taxRate" class="w-24 text-right" min="0" step="0.01" value="10">
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-700">Tax Amount:</span>
+                            <span id="taxAmount" class="font-semibold text-gray-800">Rs.0.00</span>
+                        </div>
+                        <div class="flex justify-between border-t pt-2 mt-2">
+                            <span class="text-lg font-bold text-gray-800">Total:</span>
+                            <span id="total" class="text-lg font-bold text-blue-600">Rs.0.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Generate Button -->
+            <div class="flex justify-center mt-8">
+                <button type="submit" class="btn-primary text-xl px-8 py-3">Generate PDF Document</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- jsPDF Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
+    <script>
+        // Initialize jsPDF
+        const { jsPDF } = window.jspdf;
+
+        // Utility function to show messages
+        function showMessage(message, type = 'success') {
+            const messageBox = document.getElementById('messageBox');
+            messageBox.textContent = message;
+            messageBox.className = `message-box show bg-${type === 'success' ? 'green-500' : 'red-500'}`;
+            setTimeout(() => {
+                messageBox.className = 'message-box';
+            }, 3000);
+        }
+
+        // --- Item Management ---
+        let itemCounter = 1; // Start from 1 as 0 is initial
+        const itemsContainer = document.getElementById('itemsContainer');
+        const addItemBtn = document.getElementById('addItemBtn');
+
+        // Function to update item row IDs and names
+        function updateItemRowIds() {
+            const itemRows = itemsContainer.querySelectorAll('.item-row');
+            itemRows.forEach((row, index) => {
+                row.querySelectorAll('input, textarea').forEach(input => {
+                    const name = input.name;
+                    input.id = `${name}-${index}`;
+                    input.setAttribute('data-index', index); // Add data-index for easy reference
+                });
+                const removeBtn = row.querySelector('.remove-item-btn');
+                if (removeBtn) {
+                    if (itemRows.length > 1) {
+                        removeBtn.classList.remove('hidden');
+                    } else {
+                        removeBtn.classList.add('hidden');
+                    }
+                }
+            });
+            calculateTotals(); // Recalculate totals after ID update
+        }
+
+        // Add item row
+        addItemBtn.addEventListener('click', () => {
+            const newItemRow = document.createElement('div');
+            newItemRow.className = 'item-row grid grid-cols-1 md:grid-cols-5 gap-4 items-end';
+            newItemRow.innerHTML = `
+                <div class="col-span-2">
+                    <label for="description-${itemCounter}" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                    <input type="text" id="description-${itemCounter}" name="description" class="w-full" required>
+                </div>
+                <div>
+                    <label for="quantity-${itemCounter}" class="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
+                    <input type="number" id="quantity-${itemCounter}" name="quantity" class="w-full" min="1" value="1" required>
+                </div>
+                <div>
+                    <label for="unitPrice-${itemCounter}" class="block text-sm font-medium text-gray-700 mb-1">Unit Price</label>
+                    <input type="number" id="unitPrice-${itemCounter}" name="unitPrice" class="w-full" min="0.01" step="0.01" value="0.00" required>
+                </div>
+                <div class="flex items-center justify-end">
+                    <button type="button" class="btn-danger remove-item-btn">Remove</button>
+                </div>
+            `;
+            itemsContainer.appendChild(newItemRow);
+            itemCounter++;
+            updateItemRowIds(); // Update IDs and show/hide remove buttons
+        });
+
+        // Remove item row (delegated event listener)
+        itemsContainer.addEventListener('click', (event) => {
+            if (event.target.classList.contains('remove-item-btn')) {
+                const itemRows = itemsContainer.querySelectorAll('.item-row');
+                if (itemRows.length > 1) { // Ensure at least one item remains
+                    event.target.closest('.item-row').remove();
+                    updateItemRowIds(); // Update IDs and show/hide remove buttons
+                } else {
+                    showMessage("Cannot remove the last item.", "error");
+                }
+            }
+        });
+
+        // --- Calculation Logic ---
+        const subtotalSpan = document.getElementById('subtotal');
+        const taxRateInput = document.getElementById('taxRate');
+        const taxAmountSpan = document.getElementById('taxAmount');
+        const totalSpan = document.getElementById('total');
+        const currencySymbolInput = document.getElementById('currencySymbol'); // Get currency input
+
+        function calculateTotals() {
+            let subtotal = 0;
+            const itemRows = itemsContainer.querySelectorAll('.item-row');
+            const currency = currencySymbolInput.value; // Get current currency symbol
+
+            itemRows.forEach(row => {
+                const quantity = parseFloat(row.querySelector('[name="quantity"]').value) || 0;
+                const unitPrice = parseFloat(row.querySelector('[name="unitPrice"]').value) || 0;
+                subtotal += quantity * unitPrice;
+            });
+
+            const taxRate = parseFloat(taxRateInput.value) || 0;
+            const taxAmount = subtotal * (taxRate / 100);
+            const total = subtotal + taxAmount;
+
+            subtotalSpan.textContent = `${currency}${subtotal.toFixed(2)}`;
+            taxAmountSpan.textContent = `${currency}${taxAmount.toFixed(2)}`;
+            totalSpan.textContent = `${currency}${total.toFixed(2)}`;
+        }
+
+        // Listen for input changes to recalculate totals
+        itemsContainer.addEventListener('input', calculateTotals);
+        taxRateInput.addEventListener('input', calculateTotals);
+        currencySymbolInput.addEventListener('input', calculateTotals); // Listen for currency changes
+
+        // Initial setup on load
+        document.addEventListener('DOMContentLoaded', () => {
+            updateItemRowIds(); // Ensure initial IDs and remove button visibility are correct
+            calculateTotals();
+
+            // Function to set default dates and update labels based on document type
+            function updateDocumentFields() {
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = String(today.getMonth() + 1).padStart(2, '0');
+                const day = String(today.getDate()).padStart(2, '0');
+                document.getElementById('invoiceDate').value = `${year}-${month}-${day}`;
+
+                const documentType = document.getElementById('documentType').value;
+                const dueDateInput = document.getElementById('dueDate');
+                const dueDateField = document.getElementById('dueDateField');
+                // Corrected selectors to match 'id' attributes of the inputs
+                const documentNumberLabel = document.querySelector('label[for="invoiceNumber"]');
+                const documentDateLabel = document.querySelector('label[for="invoiceDate"]');
+
+                // Update labels
+                if (documentNumberLabel) {
+                    documentNumberLabel.textContent = `${documentType} Number`;
+                }
+                if (documentDateLabel) {
+                    documentDateLabel.textContent = `${documentType} Date`;
+                }
+
+
+                if (documentType === 'Invoice') {
+                    const fiveDaysLater = new Date(today);
+                    fiveDaysLater.setDate(today.getDate() + 5);
+                    const dueYear = fiveDaysLater.getFullYear();
+                    const dueMonth = String(fiveDaysLater.getMonth() + 1).padStart(2, '0');
+                    const dueDay = String(fiveDaysLater.getDate()).padStart(2, '0');
+                    dueDateInput.value = `${dueYear}-${dueMonth}-${dueDay}`;
+                    dueDateField.style.display = 'block'; // Show due date field
+                } else {
+                    dueDateInput.value = ''; // Clear due date for Quotation/Bill
+                    dueDateField.style.display = 'none'; // Hide due date field
+                }
+            }
+
+            // Set initial document fields
+            updateDocumentFields();
+
+            // Listen for changes in document type to update fields
+            document.getElementById('documentType').addEventListener('change', updateDocumentFields);
+        });
+
+        // Function to format date to DD/MM/YYYY
+        function formatDateToDDMMYYYY(dateString) {
+            if (!dateString) return '';
+            const [year, month, day] = dateString.split('-');
+            return `${day}/${month}/${year}`;
+        }
+
+        // --- PDF Generation ---
+        document.getElementById('invoiceForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            try {
+                const doc = new jsPDF();
+                const currency = currencySymbolInput.value; // Get current currency symbol for PDF
+                const documentType = document.getElementById('documentType').value; // Get selected document type
+
+                // Set default font for better consistency
+                doc.setFont("helvetica");
+
+                // Fetch form data
+                const yourCompanyName = document.getElementById('yourCompanyName').value;
+                const yourCompanyAddress = document.getElementById('yourCompanyAddress').value;
+                const yourCompanyEmail = document.getElementById('yourCompanyEmail').value;
+                const yourCompanyPhone = document.getElementById('yourCompanyPhone').value;
+
+                const clientName = document.getElementById('clientName').value;
+                const clientAddress = document.getElementById('clientAddress').value;
+                const invoiceNumber = document.getElementById('invoiceNumber').value;
+                const invoiceDate = document.getElementById('invoiceDate').value;
+                let dueDate = ''; // Initialize dueDate as empty
+                // Only get dueDate if it's an Invoice, otherwise it remains empty
+                if (documentType === 'Invoice') {
+                    dueDate = document.getElementById('dueDate').value;
+                }
+                const notes = document.getElementById('notes').value;
+
+                const subtotalValue = subtotalSpan.textContent;
+                const taxAmountValue = taxAmountSpan.textContent;
+                const totalValue = totalSpan.textContent;
+
+                // Add content to PDF
+                let y = 20; // Initial Y position
+
+                // Document Title (dynamic based on selection)
+                doc.setFontSize(36);
+                doc.setTextColor(59, 130, 246); // Tailwind blue-500
+                doc.text(documentType.toUpperCase(), 105, y, { align: 'center' });
+                y += 25; // Increase space after title
+
+                // Your Company Details (Top Right)
+                const companyDetailsX = doc.internal.pageSize.width - 20; // Right align
+                const companyAddressMaxWidth = 70; // Max width for company address to prevent overlap
+
+                doc.setFontSize(10);
+                doc.setTextColor(75, 85, 99); // Tailwind gray-600
+                doc.text(`${yourCompanyName}`, companyDetailsX, y, { align: 'right' });
+                y += 5;
+                // Use splitTextToSize for company address
+                const splitYourCompanyAddress = doc.splitTextToSize(yourCompanyAddress, companyAddressMaxWidth);
+                doc.text(splitYourCompanyAddress, companyDetailsX, y, { align: 'right' });
+                y += (splitYourCompanyAddress.length * 5) + 5; // Adjust Y based on lines of address
+
+                if (yourCompanyEmail) {
+                    doc.text(`Email: ${yourCompanyEmail}`, companyDetailsX, y, { align: 'right' });
+                    y += 5;
+                }
+                if (yourCompanyPhone) {
+                    doc.text(`Phone: ${yourCompanyPhone}`, companyDetailsX, y, { align: 'right' });
+                    y += 15; // Extra space after company details
+                } else {
+                    y += 10;
+                }
+
+                // Reset y for the next section if company details pushed it too far
+                y = Math.max(y, 70); // Ensure a minimum starting Y for client/document details
+
+                // Client Details (Left) and Document Info (Right)
+                const clientDetailsX = 20;
+                const clientAddressMaxWidth = 70; // Max width for client address to prevent overlap
+
+                const documentInfoLabelX = doc.internal.pageSize.width - 70; // Adjusted for better label alignment
+                const documentInfoValueX = doc.internal.pageSize.width - 20; // Adjusted for better value alignment
+
+                doc.setFontSize(12);
+                doc.setTextColor(31, 41, 55); // Tailwind gray-800
+                doc.text("BILL TO:", clientDetailsX, y);
+                doc.setFontSize(10);
+                doc.setTextColor(75, 85, 99);
+                doc.text(`${clientName}`, clientDetailsX, y + 5);
+                // Use splitTextToSize for client address
+                const splitClientAddress = doc.splitTextToSize(clientAddress, clientAddressMaxWidth);
+                doc.text(splitClientAddress, clientDetailsX, y + 10);
+                y += (splitClientAddress.length * 5) + 10; // Adjust Y based on lines of address
+
+
+                // Document Info (Document #, Date, Due Date)
+                let currentDocInfoY = Math.max(y - 25, 70); // Start document info labels from a consistent Y
+
+                // Calculate the starting Y for the document info block relative to the top of the page
+                // This ensures it aligns horizontally with the "BILL TO" section
+                const billToY = y - (splitClientAddress.length * 5) - 10; // Approximate Y of "BILL TO:"
+                currentDocInfoY = Math.max(currentDocInfoY, billToY);
+
+
+                doc.setFontSize(12);
+                doc.setTextColor(31, 41, 55);
+                doc.text(`${documentType} #:` , documentInfoLabelX, currentDocInfoY, { align: 'left' });
+                doc.setFontSize(10);
+                doc.setTextColor(75, 85, 99);
+                doc.text(`${invoiceNumber}`, documentInfoValueX, currentDocInfoY, { align: 'right' });
+                currentDocInfoY += 5;
+
+                doc.setFontSize(12);
+                doc.setTextColor(31, 41, 55);
+                doc.text(`${documentType} Date:`, documentInfoLabelX, currentDocInfoY, { align: 'left' });
+                doc.setFontSize(10);
+                doc.setTextColor(75, 85, 99);
+                doc.text(`${formatDateToDDMMYYYY(invoiceDate)}`, documentInfoValueX, currentDocInfoY, { align: 'right' });
+                currentDocInfoY += 5;
+
+                // Conditionally add Due Date
+                if (documentType === 'Invoice') {
+                    doc.setFontSize(12);
+                    doc.setTextColor(31, 41, 55);
+                    doc.text("Due Date:", documentInfoLabelX, currentDocInfoY, { align: 'left' });
+                    doc.setFontSize(10);
+                    doc.setTextColor(75, 85, 99);
+                    doc.text(`${formatDateToDDMMYYYY(dueDate)}`, documentInfoValueX, currentDocInfoY, { align: 'right' });
+                    currentDocInfoY += 5;
+                }
+
+                y = Math.max(y, currentDocInfoY + 10); // Ensure Y is below both client address and document info
+
+
+                // Add a horizontal line for separation
+                doc.setDrawColor(209, 213, 219); // Tailwind gray-300
+                doc.setLineWidth(0.5);
+                doc.line(20, y, doc.internal.pageSize.width - 20, y);
+                y += 10; // Space after line
+
+                // Items Table
+                const headers = [['Description', 'Quantity', `Unit Price`, `Amount`]];
+                const data = [];
+                const itemRows = itemsContainer.querySelectorAll('.item-row');
+
+                itemRows.forEach(row => {
+                    const description = row.querySelector('[name="description"]').value;
+                    const quantity = parseFloat(row.querySelector('[name="quantity"]').value) || 0;
+                    const unitPrice = parseFloat(row.querySelector('[name="unitPrice"]').value) || 0;
+                    const amount = (quantity * unitPrice).toFixed(2);
+                    // Pass empty strings for currency columns, we will draw them manually
+                    data.push([description, quantity, '', '']);
+                });
+
+                doc.autoTable({
+                    startY: y,
+                    head: headers,
+                    body: data,
+                    theme: 'striped',
+                    headStyles: {
+                        fillColor: [59, 130, 246], // Tailwind blue-500
+                        textColor: 255,
+                        fontStyle: 'bold',
+                        fontSize: 10,
+                        halign: 'center'
+                    },
+                    styles: {
+                        fontSize: 9,
+                        cellPadding: 3,
+                        textColor: [55, 65, 81] // Tailwind gray-700
+                    },
+                    columnStyles: {
+                        0: { cellWidth: 'auto', halign: 'left' },
+                        1: { cellWidth: 25, halign: 'center' },
+                        2: { cellWidth: 35, halign: 'right' },
+                        3: { cellWidth: 35, halign: 'right' }
+                    },
+                    didDrawCell: function (data) {
+                        // For Unit Price and Amount columns in the body
+                        if (data.section === 'body' && (data.column.index === 2 || data.column.index === 3)) {
+                            const rowIndex = data.row.index;
+                            const itemRowElement = itemsContainer.querySelectorAll('.item-row')[rowIndex];
+                            let valueToDraw;
+
+                            if (data.column.index === 2) { // Unit Price column
+                                valueToDraw = parseFloat(itemRowElement.querySelector('[name="unitPrice"]').value).toFixed(2) || '0.00';
+                            } else { // Amount column
+                                const quantity = parseFloat(itemRowElement.querySelector('[name="quantity"]').value) || 0;
+                                const unitPrice = parseFloat(itemRowElement.querySelector('[name="unitPrice"]').value) || 0;
+                                valueToDraw = (quantity * unitPrice).toFixed(2);
+                            }
+
+                            const x = data.cell.x + data.cell.width;
+                            const y = data.cell.y + data.cell.height / 2 + doc.internal.getFontSize() / 2 - 1;
+
+                            doc.setTextColor(55, 65, 81);
+                            doc.setFontSize(9);
+                            doc.text(`${currency} ${valueToDraw}`, x - data.cell.padding('right'), y, { align: 'right' });
+                        }
+                    },
+                    didDrawPage: function (data) {
+                        // Footer for page numbers if needed
+                    }
+                });
+
+                // Get the final Y position after the table
+                y = doc.autoTable.previous.finalY + 15;
+
+                // Totals (Right Aligned)
+                const totalsLabelX = doc.internal.pageSize.width - 70;
+                const totalsValueX = doc.internal.pageSize.width - 20;
+
+                doc.setFontSize(12);
+                doc.setTextColor(31, 41, 55);
+                doc.text("Subtotal:", totalsLabelX, y, { align: 'right' });
+                doc.text(`${subtotalValue}`, totalsValueX, y, { align: 'right' });
+                y += 7;
+
+                doc.text("Tax Amount:", totalsLabelX, y, { align: 'right' });
+                doc.text(`${taxAmountValue}`, totalsValueX, y, { align: 'right' });
+                y += 7;
+
+                doc.setFontSize(14);
+                doc.setTextColor(59, 130, 246);
+                doc.text("TOTAL:", totalsLabelX, y, { align: 'right' });
+                doc.text(`${totalValue}`, totalsValueX, y, { align: 'right' });
+                y += 20;
+
+                // Notes (Left Aligned)
+                if (notes) {
+                    doc.setFontSize(10);
+                    doc.setTextColor(75, 85, 99);
+                    doc.text("Notes/Terms:", 20, y);
+                    doc.setFontSize(9);
+                    doc.text(notes, 20, y + 5, { maxWidth: 170 });
+                }
+
+                // Add "Computer Generated Document" at the bottom center (dynamic)
+                const pageHeight = doc.internal.pageSize.height;
+                doc.setFontSize(8);
+                doc.setTextColor(156, 163, 175);
+                doc.text(`This is a Computer Generated ${documentType}`, doc.internal.pageSize.width / 2, pageHeight - 15, { align: 'center' });
+
+
+                // Save the PDF
+                doc.save(`${documentType}-${invoiceNumber}.pdf`);
+                showMessage(`${documentType} generated successfully!`, "success");
+
+            } catch (error) {
+                console.error("Error generating PDF:", error);
+                showMessage(`Error generating PDF: ${error.message}`, "error");
+            }
+        });
+    </script>
+</body>
+</html>
